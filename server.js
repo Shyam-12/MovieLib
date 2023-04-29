@@ -5,16 +5,20 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express')
 const app = express();
 const expressLayout = require('express-ejs-layouts');
+const bodyParser = require('body-parser');
 
 const indexRouter = require('./routes/index');
-
+const directorRouter = require('./routes/directors');
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.set('layout', 'layouts/layout');
+
 app.use(expressLayout);
 app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: false }));
 
 app.use('/', indexRouter);
+app.use('/directors', directorRouter);
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -25,9 +29,7 @@ db.on('error', error => {
 db.once('open', () => {
     console.log('Connected to Mongoose');
 })
-
-
-
+ 
 app.listen(process.env.PORT || 3000, () => {
     console.log('Server is running on port 3000');
 })
